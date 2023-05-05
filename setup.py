@@ -15,7 +15,7 @@ setup(
     description='A package to facilitate efficient and accurate calculation of the medication adherence metric "Proportion of Days Covered" or "PDC".',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    # url='https://github.com/<username>/<repository>',
+    url='https://github.com/famutimine/pdcscore',
     author='Daniel Famutimi MD, MPH',
     author_email='danielfamutimi@gmail.com',
     license='MIT',
