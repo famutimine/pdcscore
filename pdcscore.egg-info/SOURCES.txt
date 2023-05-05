@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+pdcscore/__init__.py
+pdcscore/pdcscore.py
+pdcscore.egg-info/PKG-INFO
+pdcscore.egg-info/SOURCES.txt
+pdcscore.egg-info/dependency_links.txt
+pdcscore.egg-info/requires.txt
+pdcscore.egg-info/top_level.txt
