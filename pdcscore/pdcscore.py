@@ -1,13 +1,3 @@
-       
-"""
-Author: Daniel Famutimi
-Package Name: pdcscore
-Usage:
-    A package to faciliate efficent calculation of the medication adherence metric
-        "Proportion of Days Covered" or "PDC".
-    Currently contains a single public function (calculate_pdc) to calculate PDC at member-drug level. 
-"""
-
 import numpy as np
 import pandas as pd
 from multiprocessing import Pool, cpu_count
@@ -31,11 +21,20 @@ class pdccalc:
         subset = self.dataframe[(self.dataframe[self.patient_id_col] == patient_id) & (self.dataframe[self.drugname_col] == drug)]
         if subset.empty:
             return None
+        
+        # determine if the first fill date precedes mbr_elig_start_dt_col by <=6 months
+        first_fill_date = subset[self.filldate_col].min()
+        mbr_elig_start_dt = subset[self.mbr_elig_start_dt_col].iloc[0]
+        if (first_fill_date - mbr_elig_start_dt) <= pd.Timedelta(days=6*30):
+            start_date = mbr_elig_start_dt
+        else:
+            start_date = max(first_fill_date, mbr_elig_start_dt)
+        
         dates = []
         for i, row in subset.iterrows():
-            start_date = max(row[self.filldate_col], row[self.mbr_elig_start_dt_col])
             end_date = min(row[self.filldate_col] + pd.Timedelta(days=row[self.supply_days_col]), row[self.mbr_elig_end_dt_col])
-            dates.append((start_date, end_date))
+            if end_date >= start_date:
+                dates.append((start_date, end_date))
         dates.sort()
         merged_dates = [dates[0]]
         for date_range in dates[1:]:
