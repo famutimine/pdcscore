@@ -1,3 +1,5 @@
+## README.md
+
 The objective of this package is to offer a Python-based solution for computing the Proportion of Days Covered (PDC), a widely used metric in the healthcare industry to evaluate medication adherence. As the healthcare analytics sector shifts away from SAS, there is a growing need to recreate key metrics in alternative platforms. This package aims to simplify the process and reduce the workload for business analysts in the healthcare ecosystem by providing a readily available PDC calculation tool, thereby eliminating the need to build it from scratch.
 
 I followed the original implementation logic of PDC in SAS, this can be found at **https://support.sas.com/resources/papers/proceedings13/167-2013.pdf **
