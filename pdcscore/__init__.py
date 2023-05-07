@@ -1,5 +1,5 @@
-from .pdcscore import pdccalc
+from .pdcscore import pdcCalc
 
-__version__ = '1.0.3'
+__version__ = '1.1.3'
 
-__all__ = ['pdccalc']
+__all__ = ['pdcCalc']
