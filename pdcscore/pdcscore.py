@@ -27,21 +27,28 @@ class pdcCalc:
         df = df.drop('date_diff', axis=1)
 
         # Get the fill_enddate
-        df['fill_enddate'] = df[self.filldate_col] + pd.to_timedelta(df[self.supply_days_col], unit='D')
+        df['fill_enddate'] = df[self.filldate_col] + pd.to_timedelta(df[self.supply_days_col], unit='D') - pd.Timedelta(days=1)
 
         # Group the dataframe and select the first value of each column within each group
-        new_df = df.groupby([self.patient_id_col, self.drugname_col]).first().reset_index()
-
-        new_df['effective_msr_start_dt'] = new_df.apply(lambda row: row[self.filldate_col]
-                                                        if row[self.filldate_col] > row[self.msr_start_dt_col]
+        df_sorted=df.sort_values(by=[self.patient_id_col, self.drugname_col,self.filldate_col])
+        first_fill_dates=df_sorted.groupby([self.patient_id_col, self.drugname_col])[self.filldate_col].first().reset_index().rename(columns={self.filldate_col:'first_filldate'})
+        
+        # derive the effective measurement start date
+        base_data = first_fill_dates.merge(df[[self.patient_id_col, self.drugname_col,self.msr_start_dt_col,self.msr_end_dt_col]],on=[self.patient_id_col, self.drugname_col], how='left').drop_duplicates()
+        base_data['effective_msr_start_dt'] = base_data.apply(lambda row: row['first_filldate']
+                                                        if row['first_filldate'] >= row[self.msr_start_dt_col]
                                                         else row[self.msr_start_dt_col], axis=1)
 
+          
         # Calculate the totaldays: denominator for each patient-drugname pair
-        new_df['totaldays'] = (new_df[self.msr_end_dt_col] + pd.Timedelta(days=1) - new_df[
-            'effective_msr_start_dt']).dt.days
+        base_data['totaldays']=(base_data[self.msr_end_dt_col] + pd.Timedelta(days=1) - base_data['effective_msr_start_dt']).dt.days
+        base_data=base_data.drop_duplicates()
 
-        df = df.merge(new_df[[self.patient_id_col, self.drugname_col, 'effective_msr_start_dt', 'totaldays']],
-                      on=[self.patient_id_col, self.drugname_col], how='left')
+        # Merge dataframes to be able to calculate dayscovered
+        dc=df.merge(base_data[[self.patient_id_col, self.drugname_col,self.msr_start_dt_col
+                       ,self.msr_end_dt_col,'effective_msr_start_dt','totaldays']],
+           on=[self.patient_id_col, self.drugname_col,self.msr_start_dt_col,self.msr_end_dt_col],how='inner').drop_duplicates()
+
 
         # Create a date array for each row that represents all valid rows based on logic below:
         # if the filldate_col is less than effective_msr_start_dt (effective start date of the measurement period) then use effective_msr_start_dt
@@ -54,15 +61,17 @@ class pdcCalc:
                                        end=row['fill_enddate'])
             return [str(date.date()) for date in date_range if date <= row[self.msr_end_dt_col]]
 
-        df['date_array'] = [generate_date_array(row) for _, row in df.iterrows()]
+        dc['date_array'] = [generate_date_array(row) for _, row in dc.iterrows()]
         
         # Group by 'patient_id_col', 'drugname_col', 'totaldays' and aggregate by a concatenated list of unique dates (to avoid overlapping dates)
         # the array length represents the dayscovered
-        pdc = df.groupby([self.patient_id_col, self.drugname_col, 'totaldays'])['date_array'].apply(
-            lambda x: len(np.unique(np.concatenate(x.tolist())))).reset_index(name='dayscovered')
+        pdc = dc.groupby([self.patient_id_col, self.drugname_col, 'totaldays'])['date_array'].apply(lambda x: len(np.unique(np.concatenate(x.tolist())))).reset_index(name='dayscovered')
 
         # Calculate pdc column as dayscovered divided by totaldays
         pdc['pdc_score'] = pdc['dayscovered'] / pdc['totaldays']
+
+        pool.close()
+        pool.join()
 
         return pdc
 
