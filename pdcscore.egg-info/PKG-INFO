@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pdcscore
-Version: 1.1.3
+Version: 1.1.4
 Summary: A package to facilitate efficient and accurate calculation of the medication adherence metric "Proportion of Days Covered" or "PDC".
 Home-page: https://github.com/famutimine/pdcscore
 Author: Daniel Famutimi MD, MPH
@@ -24,9 +24,11 @@ Classifier: Topic :: Scientific/Engineering :: Information Analysis
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
+## README.md
+
 The objective of this package is to offer a Python-based solution for computing the Proportion of Days Covered (PDC), a widely used metric in the healthcare industry to evaluate medication adherence. As the healthcare analytics sector shifts away from SAS, there is a growing need to recreate key metrics in alternative platforms. This package aims to simplify the process and reduce the workload for business analysts in the healthcare ecosystem by providing a readily available PDC calculation tool, thereby eliminating the need to build it from scratch.
 
-I followed the original implementation logic of PDC in SAS, this can be found at https://support.sas.com/resources/papers/proceedings13/167-2013.pdf 
+I followed the original implementation logic of PDC in SAS, this can be found at https://support.sas.com/resources/papers/proceedings13/167-2013.pdf
 
 This paper offers a gentle, yet detailed introduction to the topic, and will serve as a reference to anyone new to the subject.
 
@@ -106,4 +108,5 @@ pdc_scores_df = calcfunc.calculate_pdc()
 
 # Inspect output
 pdc_scores_df.head()
+
 
