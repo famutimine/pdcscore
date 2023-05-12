@@ -7,7 +7,7 @@ I followed the original implementation logic of PDC in SAS, this can be found at
 This paper offers a gentle, yet detailed introduction to the topic, and will serve as a reference to anyone new to the subject.
 
 
-Current update accounts for 6 months washout period and is optimized for multiprocessing large datasets.
+Current update is optimized for multiprocessing large datasets.
 
 Please use as described below:
 
