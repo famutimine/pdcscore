@@ -11,7 +11,7 @@ with open(file_path, encoding='utf-8') as f:
 
 setup(
     name='pdcscore',
-    version='1.1.4',
+    version='1.1.5',
     description='A package to facilitate efficient and accurate calculation of the medication adherence metric "Proportion of Days Covered" or "PDC".',
     long_description=long_description,
     long_description_content_type='text/markdown',
