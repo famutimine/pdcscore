@@ -49,7 +49,7 @@ class pdcCalc:
         # else use filldate_col as the start of the range, the end date of the range is the fill_enddate less of msr_end_dt_col
 
         def generate_date_array(row):
-            date_range = pd.date_range(start=row['effective_msr_start_dt'],end=row['fill_enddate'])
+            date_range = pd.date_range(start=row[self.filldate_col], end=row['fill_enddate'])
             return [str(date.date()) for date in date_range if date <= row[self.msr_end_dt_col]]
 
         dc['date_array'] = [generate_date_array(row) for _, row in dc.iterrows()]
@@ -65,4 +65,3 @@ class pdcCalc:
         pool.join()
 
         return pdc
-
