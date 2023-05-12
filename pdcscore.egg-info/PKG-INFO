@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pdcscore
-Version: 1.1.4
+Version: 1.1.5
 Summary: A package to facilitate efficient and accurate calculation of the medication adherence metric "Proportion of Days Covered" or "PDC".
 Home-page: https://github.com/famutimine/pdcscore
 Author: Daniel Famutimi MD, MPH
@@ -33,7 +33,7 @@ I followed the original implementation logic of PDC in SAS, this can be found at
 This paper offers a gentle, yet detailed introduction to the topic, and will serve as a reference to anyone new to the subject.
 
 
-Current update accounts for 6 months washout period and is optimized for multiprocessing large datasets.
+Current update is optimized for multiprocessing large datasets.
 
 Please use as described below:
 
