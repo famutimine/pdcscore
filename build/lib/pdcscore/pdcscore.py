@@ -18,13 +18,7 @@ class pdcCalc:
         df = self.dataframe.copy()
 
         # Calculate the date difference
-        df['date_diff'] = df[self.msr_start_dt_col] - df[self.filldate_col] + pd.Timedelta(days=1)
-
-        # Filter rows where date difference is less than or equal to 180 days
-        df = df[df['date_diff'] < pd.Timedelta(days=180)]
-
-        # Remove the date_diff column
-        df = df.drop('date_diff', axis=1)
+        df=df[df[self.filldate_col]>=df[self.msr_start_dt_col]]
 
         # Get the fill_enddate
         df['fill_enddate'] = df[self.filldate_col] + pd.to_timedelta(df[self.supply_days_col], unit='D') - pd.Timedelta(days=1)
@@ -36,7 +30,7 @@ class pdcCalc:
         # derive the effective measurement start date
         base_data = first_fill_dates.merge(df[[self.patient_id_col, self.drugname_col,self.msr_start_dt_col,self.msr_end_dt_col]],on=[self.patient_id_col, self.drugname_col], how='left').drop_duplicates()
         base_data['effective_msr_start_dt'] = base_data.apply(lambda row: row['first_filldate']
-                                                        if row['first_filldate'] >= row[self.msr_start_dt_col]
+                                                        if row['first_filldate'] > row[self.msr_start_dt_col]
                                                         else row[self.msr_start_dt_col], axis=1)
 
           
@@ -55,10 +49,7 @@ class pdcCalc:
         # else use filldate_col as the start of the range, the end date of the range is the fill_enddate less of msr_end_dt_col
 
         def generate_date_array(row):
-            date_range = pd.date_range(start=row['effective_msr_start_dt']
-                                       if row[self.filldate_col] < row['effective_msr_start_dt']
-                                       else row[self.filldate_col],
-                                       end=row['fill_enddate'])
+            date_range = pd.date_range(start=row['effective_msr_start_dt'],end=row['fill_enddate'])
             return [str(date.date()) for date in date_range if date <= row[self.msr_end_dt_col]]
 
         dc['date_array'] = [generate_date_array(row) for _, row in dc.iterrows()]
@@ -74,4 +65,3 @@ class pdcCalc:
         pool.join()
 
         return pdc
-
