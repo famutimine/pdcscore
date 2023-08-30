@@ -27,6 +27,8 @@ Please use as described below:
 
 **msr_end_dt_col** - *end date of measurement period for the patient or a reference END DATE. Format = DATE*
 
+**overstock** - *Set to True to adjust for overstocking otherwise set to False*
+
 
 
 **OUTPUT DATAFRAME** - *A Pandas dataframe containing the following columns*
@@ -77,7 +79,7 @@ df.head(n=len(df))
 
 # calculate PDC scores on the input DataFrame
 calcfunc = pdcCalc(dataframe=df,patient_id_col='patient_id', drugname_col='drugname', filldate_col='filldate'
-                   , supply_days_col='supply_days', msr_start_dt_col='msr_start_dt', msr_end_dt_col='msr_end_dt',overstock=False) # Change to "True" to account for overstocking
+                   , supply_days_col='supply_days', msr_start_dt_col='msr_start_dt', msr_end_dt_col='msr_end_dt',overstock=False)
 pdc_scores_df = calcfunc.calculate_pdc()
 
 # Inspect output
