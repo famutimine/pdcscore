@@ -1,17 +1,14 @@
 from setuptools import setup, find_packages
 import os
 
-dir_path = r'C:\Users\famut\pdc_base_folder'
-file_name = 'README.md'
+from urllib.request import urlopen
 
-file_path = os.path.join(dir_path, file_name)
-
-with open(file_path, encoding='utf-8') as f:
-    long_description = f.read()
+with urlopen("https://raw.githubusercontent.com/famutimine/pdcscore/master/README.md") as fh:
+    long_description = fh.read().decode()
 
 setup(
     name='pdcscore',
-    version='1.1.6',
+    version='1.1.7',
     description='A package to facilitate efficient and accurate calculation of the medication adherence metric "Proportion of Days Covered" or "PDC".',
     long_description=long_description,
     long_description_content_type='text/markdown',
