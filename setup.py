@@ -8,7 +8,7 @@ with urlopen("https://raw.githubusercontent.com/famutimine/pdcscore/master/READM
 
 setup(
     name='pdcscore',
-    version='1.1.7',
+    version='1.1.8',
     description='A package to facilitate efficient and accurate calculation of the medication adherence metric "Proportion of Days Covered" or "PDC".',
     long_description=long_description,
     long_description_content_type='text/markdown',
