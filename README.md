@@ -79,7 +79,7 @@ df.head(n=len(df))
 
 # calculate PDC scores on the input DataFrame
 calcfunc = pdcCalc(dataframe=df,patient_id_col='patient_id', drugname_col='drugname', filldate_col='filldate'
-                   , supply_days_col='supply_days', msr_start_dt_col='msr_start_dt', msr_end_dt_col='msr_end_dt',overstock=False)
+                   , supply_days_col='supply_days', msr_start_dt_col='msr_start_dt', msr_end_dt_col='msr_end_dt',overstock=False) # Set to True to adjust for early refills
 pdc_scores_df = calcfunc.calculate_pdc()
 
 # Inspect output
