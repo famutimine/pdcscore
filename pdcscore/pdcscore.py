@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from multiprocessing import Pool, cpu_count
+from datetime import timedelta
 
 class pdcCalc:
     def __init__(self, dataframe, patient_id_col, drugname_col, filldate_col,
@@ -69,14 +70,36 @@ class pdcCalc:
 
             return pdc
         else:
-            result_df = (
-            df[df[self.filldate_col] <= df[self.msr_end_dt_col]]
-            .apply(lambda row: min((row[self.msr_end_dt_col] - row[self.filldate_col]).days + 1, row[self.supply_days_col]), axis=1)
-            .groupby([df[self.patient_id_col], df[self.drugname_col]])
-            .sum()
-            .reset_index()
-                        )
-            result_df.columns = [self.patient_id_col, self.drugname_col, 'days_on_drug']
+            # Sort the DataFrame by 'patient_id', 'drugname', and 'filldate'
+            df.sort_values(by=[self.patient_id_col, self.drugname_col, self.filldate_col], inplace=True)
+                # Create 'prior_fill_enddate' column
+            df['prior_fill_enddate'] = df.groupby([self.patient_id_col, self.drugname_col])['fill_enddate'].shift(1)
+
+            # Create 'fill_start_date' column
+            df['fill_start_date'] = df.apply(lambda row: row[self.filldate_col] if pd.isnull(row['prior_fill_enddate']) else (row['prior_fill_enddate'] + timedelta(days=1)), axis=1)
+
+            # Create 'fill_stop_date' column
+            df['fill_stop_date'] = df.apply(lambda row: row['fill_enddate'] if pd.isnull(row['prior_fill_enddate']) else min(row['fill_start_date'] + timedelta(days=row[self.supply_days_col]) - timedelta(days=1), row[self.msr_end_dt_col]), axis=1)
+
+            # Create a new column 'prior_fill_stop_date' by shifting 'fill_stop_date' within each group
+            df['prior_fill_stop_date'] = df.groupby([self.patient_id_col, self.drugname_col])['fill_stop_date'].shift(1)
+
+            # Modify 'fill_start_date' column
+            df['fill_start_date'] = df.groupby([self.patient_id_col, self.drugname_col])['fill_stop_date'].shift(1)
+            df['fill_start_date'] += pd.Timedelta(days=1)
+
+            # Modify 'fill_stop_date' column
+            df['fill_stop_date'] = df.apply(lambda row: min(row['fill_start_date'] + timedelta(days=row[self.supply_days_col] - 1), row[self.msr_end_dt_col]), axis=1)
+
+            df = df[df['fill_stop_date'] != df['prior_fill_stop_date']]
+
+            # Calculate 'dayscovered'
+            df['dayscovered'] = df.apply(lambda row: row[self.supply_days_col] if pd.isnull(row['fill_start_date']) else (row['fill_stop_date'] - max(row['fill_start_date'],row[self.filldate_col])).days + 1, axis=1)
+            df = df[[self.patient_id_col, self.drugname_col, 'dayscovered']]
+            result_df = df.groupby([self.patient_id_col, self.drugname_col]).sum('dayscovered').reset_index()          
+            
+       
+            result_df.columns = [self.patient_id_col, self.drugname_col, 'dayscovered']
             pdc=result_df.merge(base_data[[self.patient_id_col, self.drugname_col,'totaldays']],
                on=[self.patient_id_col, self.drugname_col],how='inner').drop_duplicates()
             
