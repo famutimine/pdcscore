@@ -27,7 +27,7 @@ Please use as described below:
 
 **msr_end_dt_col** - *end date of measurement period for the patient or a reference END DATE. Format = DATE*
 
-**overstock** - *Set to True to adjust for overstocking otherwise set to False*
+**overstock** - *Set to True to accommodate early refills (overstocking), otherwise set to False*
 
 
 
@@ -37,7 +37,7 @@ Please use as described below:
 
 **drugname_col** - *The name of the drug being filled or drug class or Generic name, as provided in original input dataframe.*
 
-**dayscovered**- *The number of unique days of drug coverage, after shifting coverage to accommodate early refills. FORMAT = INTEGER*
+**dayscovered**- *The number of unique days of drug coverage. FORMAT = INTEGER*
 
 **totaldays** - *The total number of days in patient analysis window. Set to 0 if days of coverage is 0. FORMAT = INTEGER*
 
