@@ -2,12 +2,6 @@
 
 The objective of this package is to offer a Python-based solution for computing the Proportion of Days Covered (PDC), a widely used metric in the healthcare industry to evaluate medication adherence. As the healthcare analytics sector shifts away from SAS, there is a growing need to recreate key metrics in alternative platforms. This package aims to simplify the process and reduce the workload for business analysts in the healthcare ecosystem by providing a readily available PDC calculation tool, thereby eliminating the need to build it from scratch.
 
-I followed the original implementation logic of PDC in SAS, this can be found at https://support.sas.com/resources/papers/proceedings13/167-2013.pdf
-
-This paper offers a gentle, yet detailed introduction to the topic, and will serve as a reference to anyone new to the subject.
-
-
-Current update is optimized for multiprocessing large datasets.
 
 Please use as described below:
 
@@ -27,7 +21,7 @@ Please use as described below:
 
 **msr_end_dt_col** - *end date of measurement period for the patient or a reference END DATE. Format = DATE*
 
-**overstock** - *Set to True to accommodate early refills (overstocking), otherwise set to False*
+**overlap_adjustment** - *Set to True to accommodate early refills, otherwise set to False*
 
 
 
@@ -79,7 +73,7 @@ df.head(n=len(df))
 
 # calculate PDC scores on the input DataFrame
 calcfunc = pdcCalc(dataframe=df,patient_id_col='patient_id', drugname_col='drugname', filldate_col='filldate'
-                   , supply_days_col='supply_days', msr_start_dt_col='msr_start_dt', msr_end_dt_col='msr_end_dt',overstock=False) # Set to True to adjust for early refills
+                   , supply_days_col='supply_days', msr_start_dt_col='msr_start_dt', msr_end_dt_col='msr_end_dt',overlap_adjustment=True) # Set to True to adjust for early refills
 pdc_scores_df = calcfunc.calculate_pdc()
 
 # Inspect output
